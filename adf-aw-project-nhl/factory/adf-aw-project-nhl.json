@@ -1,0 +1,9 @@
+{
+	"name": "adf-aw-project-nhl",
+	"location": "japaneast",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "6f439594-b951-4764-a22e-99847294a03a",
+		"tenantId": "07acb355-56bc-489b-b98c-8fea440460e8"
+	}
+}
