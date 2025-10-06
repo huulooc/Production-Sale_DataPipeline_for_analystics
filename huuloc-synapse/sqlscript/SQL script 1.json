@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1",
+	"properties": {
+		"content": {
+			"query": "select distinct d.Product_ID from SalesOrderHeader h\njoin SalesOrderDetail d\non d.Sales_Order_ID = h.Sales_Order_ID \nwhere YEAR(h.Order_Date) = '2011'\n\n\nselect distinct Product_ID from FactSalesOrder \nwhere YEAR(Order_Date) = '2011'\n\nselect * from WorkOrder\nwhere Scrap_Reason_ID = 0",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "good_db",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
