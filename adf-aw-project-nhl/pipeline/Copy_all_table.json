@@ -16,18 +16,14 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "SqlServerSource",
+						"type": "AzureSqlSource",
 						"sqlReaderQuery": "Select \ns.name as SchemaName,\nt.Name as TableName \nfrom sys.tables t\nInner Join sys.schemas s\non t.schema_id= s.schema_id \n",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "SqlServerTable1",
-						"type": "DatasetReference",
-						"parameters": {
-							"SchemaName": "item().SchemaName",
-							"TableName": "item().TableName"
-						}
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
 					},
 					"firstRowOnly": false
 				}
