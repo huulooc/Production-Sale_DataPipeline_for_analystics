@@ -5,6 +5,16 @@
 			"referenceName": "AzureSqlDatabase",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"SchemaName": {
+				"type": "string",
+				"defaultValue": "item().SchemaName"
+			},
+			"TableName": {
+				"type": "string",
+				"defaultValue": "item().TableName"
+			}
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": []

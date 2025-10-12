@@ -54,73 +54,8 @@
 							}
 						},
 						{
-							"name": "Script1",
-							"type": "Script",
-							"dependsOn": [
-								{
-									"activity": "Set variable1",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"linkedServiceName": {
-								"referenceName": "AzureSqlDatabase",
-								"type": "LinkedServiceReference"
-							},
-							"typeProperties": {
-								"scripts": [
-									{
-										"parameters": [
-											{
-												"name": "SchemaName",
-												"type": "String",
-												"value": {
-													"value": "@item().SchemaName",
-													"type": "Expression"
-												},
-												"direction": "Input"
-											},
-											{
-												"name": "TableName",
-												"type": "String",
-												"value": {
-													"value": "@item().TableName",
-													"type": "Expression"
-												},
-												"direction": "Input"
-											},
-											{
-												"name": "value",
-												"type": "String",
-												"value": {
-													"value": "@variables('ddlStatement')",
-													"type": "Expression"
-												},
-												"direction": "Input"
-											}
-										],
-										"type": "NonQuery",
-										"text": {
-											"value": "@concat( 'CREATE TABLE ', item().SchemaName, '.', item().TableName, ' (', variables('ddlStatement'), ')' )\n",
-											"type": "Expression"
-										}
-									}
-								],
-								"scriptBlockExecutionTimeout": "02:00:00"
-							}
-						},
-						{
-							"name": "Set variable1",
-							"type": "SetVariable",
+							"name": "Copy data1",
+							"type": "Copy",
 							"dependsOn": [
 								{
 									"activity": "Lookup2",
@@ -130,23 +65,6 @@
 								}
 							],
 							"policy": {
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "ddlStatement",
-								"value": {
-									"value": "@concat(  replace( replace( replace( replace( replace( replace( replace( string(activity('Lookup2').output.value), '{\"COLUMN_NAME\":\"','' ), '\",\"DATA_TYPE\":\"',' ' ), '},',' , ' ), '[','' ), ']','' ), '}','' ), '\"','' ) )",
-									"type": "Expression"
-								}
-							}
-						},
-						{
-							"name": "Script1_copy1",
-							"type": "Script",
-							"dependsOn": [],
-							"policy": {
 								"timeout": "0.12:00:00",
 								"retry": 0,
 								"retryIntervalInSeconds": 30,
@@ -154,51 +72,48 @@
 								"secureInput": false
 							},
 							"userProperties": [],
-							"linkedServiceName": {
-								"referenceName": "AzureSqlDatabase",
-								"type": "LinkedServiceReference"
-							},
 							"typeProperties": {
-								"scripts": [
-									{
-										"parameters": [
-											{
-												"name": "SchemaName",
-												"type": "String",
-												"value": {
-													"value": "@item().SchemaName",
-													"type": "Expression"
-												},
-												"direction": "Input"
-											},
-											{
-												"name": "TableName",
-												"type": "String",
-												"value": {
-													"value": "@item().TableName",
-													"type": "Expression"
-												},
-												"direction": "Input"
-											},
-											{
-												"name": "value",
-												"type": "String",
-												"value": {
-													"value": "@variables('ddlStatement')",
-													"type": "Expression"
-												},
-												"direction": "Input"
-											}
-										],
-										"type": "NonQuery",
-										"text": {
-											"value": "@concat(\n  'IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = ''', item().SchemaName, ''') ',\n  'BEGIN EXEC(''CREATE SCHEMA ', item().SchemaName, '''); END;'\n)\n",
-											"type": "Expression"
-										}
+								"source": {
+									"type": "SqlServerSource",
+									"sqlReaderQuery": "@{ concat('select * from ', item().SchemaName, '.', item().TableName)}",
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "SqlServerSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
 									}
-								],
-								"scriptBlockExecutionTimeout": "02:00:00"
-							}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "SqlServerTable1",
+									"type": "DatasetReference",
+									"parameters": {
+										"SchemaName": "item().SchemaName",
+										"TableName": "item().TableName"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "SqlServerTable1",
+									"type": "DatasetReference",
+									"parameters": {
+										"SchemaName": "item().SchemaName",
+										"TableName": "item().TableName"
+									}
+								}
+							]
 						}
 					]
 				}

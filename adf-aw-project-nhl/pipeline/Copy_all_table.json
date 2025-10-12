@@ -23,7 +23,11 @@
 					},
 					"dataset": {
 						"referenceName": "AzureSqlTable1",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "item().SchemaName",
+							"TableName": "item().TableName"
+						}
 					},
 					"firstRowOnly": false
 				}
@@ -49,7 +53,20 @@
 						{
 							"name": "Copy data1",
 							"type": "Copy",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "lastload",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "currentload",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "0.12:00:00",
 								"retry": 0,
@@ -62,7 +79,7 @@
 								"source": {
 									"type": "SqlServerSource",
 									"sqlReaderQuery": {
-										"value": "@{ concat('select * from ', item().SchemaName, '.', item().TableName)}",
+										"value": "@concat('select * from ', item().SchemaName, '.', item().TableName, 'where ModifiedDate > ', activity('lastload').output.firstRow.lastload, ' and ModifiedDate < ', activity('currentload').output.firstRow.maxdate  )",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
@@ -113,6 +130,120 @@
 									}
 								}
 							]
+						},
+						{
+							"name": "lastload",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": {
+										"value": "@concat('select lastload as lastload from water_table where tablename = [',item().SchemaName,'].[' ,item().Tablename,']')",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"dataset": {
+									"referenceName": "AzureSqlTable1",
+									"type": "DatasetReference",
+									"parameters": {
+										"SchemaName": "item().SchemaName",
+										"TableName": "item().TableName"
+									}
+								}
+							}
+						},
+						{
+							"name": "currentload",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": {
+										"value": "@concat('select max(ModifiedDate) as maxdate from ',item().SchemaName,'.', item().TableName)",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"dataset": {
+									"referenceName": "AzureSqlTable1",
+									"type": "DatasetReference",
+									"parameters": {
+										"SchemaName": "item().SchemaName",
+										"TableName": "item().TableName"
+									}
+								}
+							}
+						},
+						{
+							"name": "Stored procedure1",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Copy data1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[usp_UpdateWaterTable]",
+								"storedProcedureParameters": {
+									"lastload": {
+										"value": {
+											"value": "@activity('currentload').output.firstRow.maxdate",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"SchemaName": {
+										"value": {
+											"value": "@item().SchemaName",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"TableName": {
+										"value": {
+											"value": "@item().TableName",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureSqlDatabase",
+								"type": "LinkedServiceReference"
+							}
 						}
 					]
 				}
