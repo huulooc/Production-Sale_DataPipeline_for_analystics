@@ -43,11 +43,11 @@ The solution follows a **three-layered data architecture** (Bronze â†’ Silver â†
    ![Data Pipeline](image/BrickPipeline.png)
 
    The data model here:
+   
    ![Data Pipeline](image/model.png)
    
 6. **Azure SQL Database / Synapse SQL Pool**
    - Stores processed data in a structured format for business intelligence.
-   ![Data Pipeline](image/synab.png)
 
 7. **Power BI**
    - Connects to the **Synapse**.  
@@ -55,20 +55,32 @@ The solution follows a **three-layered data architecture** (Bronze â†’ Silver â†
    - There are my dashboard in the project:
    - 
      ![Data Pipeline](image/saleanalytic.png)
-  
 
-   
+
+
+
+
+
      ![Data Pipeline](image/saleproduct.png)
+
+
+
+
 
 
    
      ![Data Pipeline](image/production.png)
   
-     
+
+
+
      
      ![Data Pipeline](image/sale.png)
   
-     
+
+
+
+
      
      ![Data Pipeline](image/employee.png)
 
