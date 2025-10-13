@@ -79,7 +79,7 @@
 								"source": {
 									"type": "SqlServerSource",
 									"sqlReaderQuery": {
-										"value": "@concat(\n  'select * from ', \n  item().SchemaName, '.', item().TableName, \n  ' where ModifiedDate > ''', activity('lastload').output.firstRow.lastload, \n  ''' and ModifiedDate < ''', activity('currentload').output.firstRow.maxdate, ''''\n)",
+										"value": "@concat(\n  'select * from ', \n  item().SchemaName, '.', item().TableName, \n  ' where ModifiedDate >= ''', activity('lastload').output.firstRow.lastload, \n  ''' and ModifiedDate <= ''', activity('currentload').output.firstRow.maxdate, ''''\n)",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
