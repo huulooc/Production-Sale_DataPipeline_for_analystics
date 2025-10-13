@@ -79,7 +79,7 @@
 								"source": {
 									"type": "SqlServerSource",
 									"sqlReaderQuery": {
-										"value": "@concat('select * from ', item().SchemaName, '.', item().TableName, 'where ModifiedDate > ', activity('lastload').output.firstRow.lastload, ' and ModifiedDate < ', activity('currentload').output.firstRow.maxdate  )",
+										"value": "@concat(\n  'select * from ', \n  item().SchemaName, '.', item().TableName, \n  ' where ModifiedDate > ''', activity('lastload').output.firstRow.lastload, \n  ''' and ModifiedDate < ''', activity('currentload').output.firstRow.maxdate, ''''\n)",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
@@ -147,7 +147,7 @@
 								"source": {
 									"type": "AzureSqlSource",
 									"sqlReaderQuery": {
-										"value": "@concat('select lastload as lastload from water_table where tablename = [',item().SchemaName,'].[' ,item().Tablename,']')",
+										"value": "@concat('select lastload as lastload from water_table where tablename = ''[', item().SchemaName, '].[', item().Tablename, ']''')",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
