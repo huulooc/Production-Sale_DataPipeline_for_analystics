@@ -97,7 +97,7 @@ The solution follows a **three-layered data architecture** (Bronze â†’ Silver â†
 | **Azure SQL Database** | Store structured data for BI |
 | **Power BI** | Data visualization and reporting |
 | **Azure Key Vault** | Secure connection strings and credentials |
-| **GitHub / Azure DevOps** | Version control and CI/CD integration |
+
 
 ## ETL Skill Used
 - Incremental load
